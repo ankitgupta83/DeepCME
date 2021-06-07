@@ -1,0 +1,37 @@
+{
+  "reaction_network_config": {
+    "reaction_network_name": "independent_birth_death",
+    "output_folder": "./Results/",
+    "final_time": 1,
+    "num_species": 10,
+    "num_time_interval": 50,
+    "func_names": ["$E(X_n)$", "$E(X_n^2)$"],
+    "exact_values_computable": "True"
+  },
+  "net_config": {
+    "dnn_training_needed": "True",
+    "training_samples_needed": "True",
+    "validation_samples_needed": "True",
+    "activation_function": "relu",
+    "num_exponential_features": 1,
+    "num_temporal_dnns": 1,
+    "use_previous_training_weights": "False",
+    "num_nodes_per_layer": 4,
+    "num_hidden_layers": 2,
+    "lr_values": [1e-2, 1e-2],
+    "lr_boundaries": [1000],
+    "num_iterations": 10000,
+    "batch_size": 100,
+    "valid_size": 100,
+    "logging_frequency": 100
+  },
+  "simulation_validation": {
+    "simulation_based_validation_needed": "True",
+    "num_trajectories": 1000,
+    "number_of_auxiliary_paths_for_BPA": 10
+  },
+  "plotting": {
+    "sensitivity_parameters": ["production rate", "degradation rate"],
+    "parameter_labels": ["$k$", "$\\gamma$"]
+  }
+}

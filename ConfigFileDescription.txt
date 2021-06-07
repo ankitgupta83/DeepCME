@@ -1,0 +1,41 @@
+The configuration JSON file contains the following objects:
+
+A. reaction_network_config: Contains parameters for the reaction network example. 
+	1. reaction_network_name: The name of the reaction network example class (must be defined in ReactionNetworkExamples.py).
+	2. output_folder: The output folder where results are stored.
+	3. final_time: This is the time T at which properties of the CME solution need to be estimated. These properties are specified by the output functions defined in 		the appropriate example class in ReactionNetworkExamples.py.   
+	4. num_species: Number of species in the network. 
+	5. num_time_interval: Specifies the time-discretisation for computation of the loss function. 
+	6. func_names: Names for the function names for the plots.  
+	7. exact_values_computable: "True" if exact computation for the outputs and their sensitivities is possible (the computations are defined in the appropriate 			example class in ReactionNetworkExamples.py). These exact values are only used for comparison. 
+
+B. net_config: Contains parameters describing the feedforward deep neural network (DNN) and the training process.
+
+	1. dnn_training_needed: "True" if DNN training is needed.
+	2. training_samples_needed: "True" if fresh training trajectories need to be generated. Otherwise previously saved trajectories are used.  
+	3. validation_samples_needed: "True" if fresh validation trajectories need to be generated. Otherwise previously saved trajectories are used.
+	4. activation_function: Specifies the nonlinear activation function for the hidden layer nodes (e.g. "relu")
+	5. num_exponential_features: Specifies the number of exponential features (i.e.\ eigenvalues) for the temporal dynamics. See the manuscript for more details.
+	6. num_temporal_dnns: Specifies the number of temporal DNNs. See the manuscript for more details.
+	7. use_previous_training_weights: "True" if previous DNN training weights are to be used. 
+	8. num_nodes_per_layer: Number of nodes per DNN layer.
+	9. num_hidden_layers: Number of hidden layers (not including input/output layers).
+	8. lr_values: The learning rate values for Adam optimiser. Specifies the learning schedule.
+	9. lr_boundaries: The learning rate boundaries for Adam optimiser. Specifies the learning schedule.
+	10. num_iterations: Number of iterations of stochastic gradient descent (SGD) for training the DNN.
+	11. batch_size: Number of training trajectories. 
+	12. valid_size: Number of validation trajectories.
+	13. logging_frequency: Number of iterations between evaluation of validation loss function. 
+
+C. simulation_validation: Contains parameters describing estimation of outputs with Monte Carlo simulations (with the stochastic simulation algorithm (SSA)) and the parameter sensitivities (with the Bernoulli path algorithm (BPA)). 
+
+	1. simulation_based_validation_needed: "True" if simulation-based estimations are required.
+	2. num_trajectories: Species the number of trajectories for simulation-based estimates.  
+	3. number_of_auxiliary_paths_for_BPA: Specifies the number of auxiliary paths required by BPA for each sensitivity sample.  
+
+D. plotting: Contains parameters for sensitivity bar charts.
+	1. sensitivity_parameters: Only sensitivities w.r.t. these parameters is plotted. 
+	2. parameter_labels: Axis labels for these sensitivity parameters. Latex encoding is allowed. 
+
+
+
