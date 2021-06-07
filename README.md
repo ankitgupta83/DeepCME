@@ -12,7 +12,7 @@ This is the code accompanying the manuscript titled **DeepCME: A deep learning f
 
 4. **ReactionNetworkExamples.py**: This file contains classes that encode reaction network examples by inheriting the "ReactionNetworkDefinition" class from (ReactionNetworkClass.py). Note that for each example, the output functions must be defined using TensorFlow operations. Currently the file includes the four examples from the manuscript: independent birth death, linear signalling cascade, nonlinear signalling cascade and linear signalling cascade with feedback. More examples can be easily added based on these examples.
 
-5. **data_saving**: This file contains subroutines for saving and retrieving training/validation trajectories, saving training history and DeepCME estimated sensitivity values.
+5. **data_saving.py**: This file contains subroutines for saving and retrieving training/validation trajectories, saving training history and DeepCME estimated sensitivity values.
 
 6. **simulation_validation.py**: This file contains subroutines for estimating outputs with Monte Carlo simulations (with the stochastic simulation algorithm (SSA)) and the parameter sensitivities (with the Bernoulli path algorithm (BPA)). See the manuscript for more details on these methods. The parameters required for these simulation-based methods are taken from the configuration JSON file. 
 
