@@ -1,6 +1,20 @@
 import numpy as np
 
 
+def save_cpu_time(results_folder_path, elapsed_time, training=True):
+    if training:
+        np.savez(results_folder_path + "training_data_cpu.npz", elapsed_time=elapsed_time)
+    else:
+        np.savez(results_folder_path + "validation_data_cpu.npz", elapsed_time=elapsed_time)
+
+
+def load_cpu_time(results_folder_path, training=True):
+    if training:
+        return np.load(results_folder_path + "training_data_cpu.npz")['elapsed_time']
+    else:
+        return np.load(results_folder_path + "validation_data_cpu.npz")['elapsed_time']
+
+
 def save_training_data(results_folder_path, training_history, function_value_data=None):
     np.savetxt('{}training_history.csv'.format(results_folder_path),
                training_history,

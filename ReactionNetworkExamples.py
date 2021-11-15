@@ -295,3 +295,170 @@ class linear_signalling_cascade_with_feedback(rxn.ReactionNetworkDefinition):
             output_list.append(elem)
 
         return tf.stack(output_list, axis=1)
+
+#
+# class birth_death_network(rxn.ReactionNetworkDefinition):
+#     """birth death network"""
+#
+#     def __init__(self):
+#         num_species = 1
+#         num_reactions = 2
+#         species_labels = ["protein"]
+#         output_species_labels = ["protein"]
+#         reactant_matrix = np.zeros([num_reactions, num_species], dtype=int)
+#         product_matrix = np.zeros([num_reactions, num_species], dtype=int)
+#         reactant_matrix[1, 0] = 1  # X --> 0
+#         product_matrix[0, 0] = 1  # 0 --> X
+#         parameter_dict = {'birth rate': 10, 'degradation rate': 1}
+#         reaction_dict = {0: ['mass action', 'birth rate'],
+#                          1: ['mass action', 'degradation rate']
+#                          }
+#
+#         super(birth_death_network, self).__init__(num_species, num_reactions, reactant_matrix,
+#                                                   product_matrix, parameter_dict, reaction_dict,
+#                                                   species_labels, output_species_labels)
+#         self.set_propensity_vector()
+#         self.set_propensity_sensitivity_matrix()
+#
+#
+# class cons_gene_expression_network(rxn.ReactionNetworkDefinition):
+#     """constitutive gene-expression network"""
+#
+#     def __init__(self):
+#         num_species = 2
+#         num_reactions = 4
+#         species_labels = ["mRNA", "protein"]
+#         output_species_labels = ["mRNA", "protein"]
+#         reactant_matrix = np.zeros([num_reactions, num_species], dtype=int)
+#         product_matrix = np.zeros([num_reactions, num_species], dtype=int)
+#         # 1. 0 --> M
+#         product_matrix[0, 0] = 1
+#         # 2. M --> M + P
+#         reactant_matrix[1, 0] = 1
+#         product_matrix[1, 0] = 1
+#         product_matrix[1, 1] = 1
+#         # 3. M --> 0
+#         reactant_matrix[2, 0] = 1
+#         # 4. P -->0
+#         reactant_matrix[3, 1] = 1
+#
+#         # define parameters
+#         parameter_dict = {'transcription rate': 1, 'translation rate': 1, 'mRNA degradation rate': 1,
+#                           'protein degradation rate': 1}
+#         reaction_dict = {0: ['mass action', 'transcription rate'],
+#                          1: ['mass action', 'translation rate'],
+#                          2: ['mass action', 'mRNA degradation rate'],
+#                          3: ['mass action', 'protein degradation rate']
+#                          }
+#         super(cons_gene_expression_network, self).__init__(num_species, num_reactions, reactant_matrix,
+#                                                            product_matrix, parameter_dict, reaction_dict,
+#                                                            species_labels, output_species_labels)
+#         self.set_propensity_vector()
+#         self.set_propensity_sensitivity_matrix()
+#         self.output_function_size = 5
+#
+#     def output_function(self, state):
+#         output_list = [state[:, i] for i in self.output_species_indices]
+#         output_list_second_moment = [state[:, i] ** 2 for i in self.output_species_indices]
+#         output_list_cross_moments = [state[:, subset[0]] * state[:, subset[1]] for subset
+#                                      in itertools.combinations(self.output_species_indices, 2)]
+#         for elem in output_list_second_moment + output_list_cross_moments:
+#             output_list.append(elem)
+#
+#         return tf.stack(output_list, axis=1)
+#
+#
+# class feedback_gene_expression_network(rxn.ReactionNetworkDefinition):
+#     """feedback gene-expression network"""
+#
+#     def __init__(self):
+#         num_species = 2
+#         num_reactions = 4
+#         species_labels = ["mRNA", "protein"]
+#         output_species_labels = ["protein"]
+#         reactant_matrix = np.zeros([num_reactions, num_species], dtype=int)
+#         product_matrix = np.zeros([num_reactions, num_species], dtype=int)
+#         # 1. 0 --> M
+#         product_matrix[0, 0] = 1
+#         # 2. M --> M + P
+#         reactant_matrix[1, 0] = 1
+#         product_matrix[1, 0] = 1
+#         product_matrix[1, 1] = 1
+#         # 3. M --> 0
+#         reactant_matrix[2, 0] = 1
+#         # 4. P -->0
+#         reactant_matrix[3, 1] = 1
+#
+#         # define parameters
+#         parameter_dict = {'base transcription rate': 10, 'Hill constant': 1, 'Hill coefficient': 1,
+#                           'translation rate': 1,
+#                           'mRNA degradation rate': 1, 'protein degradation rate': 1}
+#         reaction_dict = {0: ['Hill', 1, 'base transcription rate', 'Hill constant', 'Hill coefficient'],
+#                          1: ['mass action', 'translation rate'],
+#                          2: ['mass action', 'mRNA degradation rate'],
+#                          3: ['mass action', 'protein degradation rate']
+#                          }
+#         super(feedback_gene_expression_network, self).__init__(num_species, num_reactions, reactant_matrix,
+#                                                                product_matrix, parameter_dict, reaction_dict,
+#                                                                species_labels, output_species_labels)
+#
+#         self.set_propensity_vector()
+#         self.set_propensity_sensitivity_matrix()
+#
+#
+# class antithetic_gene_expression_network(rxn.ReactionNetworkDefinition):
+#     """antithetic gene-expression network"""
+#
+#     def __init__(self):
+#         name = "antithetic gene expression"
+#         num_species = 4
+#         num_reactions = 7
+#         species_labels = ["mRNA", "protein", "Z1", "Z2"]
+#         output_species_labels = ["protein"]
+#         reactant_matrix = np.zeros([num_reactions, num_species], dtype=int)
+#         product_matrix = np.zeros([num_reactions, num_species], dtype=int)
+#         # 1. Z_1 --> Z_1 + M
+#         product_matrix[0, 2] = 1
+#         product_matrix[0, 0] = 1
+#         reactant_matrix[0, 2] = 1
+#         # 2. M --> M + P
+#         reactant_matrix[1, 0] = 1
+#         product_matrix[1, 0] = 1
+#         product_matrix[1, 1] = 1
+#         # 3. M --> 0
+#         reactant_matrix[2, 0] = 1
+#         # 4. P -->0
+#         reactant_matrix[3, 1] = 1
+#         # 5. P -->P + Z_2
+#         reactant_matrix[4, 1] = 1
+#         product_matrix[4, 1] = 1
+#         product_matrix[4, 3] = 1
+#         # 6. Z_1 + Z_2 -->0
+#         reactant_matrix[5, 2] = 1
+#         reactant_matrix[5, 3] = 1
+#         # 7. 0 --> Z_1
+#         product_matrix[6, 2] = 1
+#
+#         # define parameters
+#         parameter_dict = {'activation rate': 5,
+#                           'translation rate': 2,
+#                           'mRNA degradation rate': 5,
+#                           'protein degradation rate': 0.5,
+#                           'theta': 1,
+#                           'eta': 100,
+#                           'mu': 10,
+#                           }
+#         reaction_dict = {0: ['mass action', 'activation rate'],
+#                          1: ['mass action', 'translation rate'],
+#                          2: ['mass action', 'mRNA degradation rate'],
+#                          3: ['mass action', 'protein degradation rate'],
+#                          4: ['mass action', 'theta'],
+#                          5: ['mass action', 'eta'],
+#                          6: ['mass action', 'mu']
+#                          }
+#         super(antithetic_gene_expression_network, self).__init__(num_species, num_reactions, reactant_matrix,
+#                                                                  product_matrix, parameter_dict, reaction_dict,
+#                                                                  species_labels, output_species_labels)
+#
+#         self.set_propensity_vector()
+#         self.set_propensity_sensitivity_matrix()

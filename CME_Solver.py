@@ -22,26 +22,38 @@ class CMESolver(object):
                 self.config_data['reaction_network_config']['final_time'],
                 self.config_data['reaction_network_config']['num_time_interval'],
                 self.config_data['net_config']['batch_size'])
-            print("Time needed to generate training trajectories: %3u" % (time.time() - start_time))
+            self.training_data_cpu_time = (time.time() - start_time)
+            print("Time needed to generate training trajectories: %3u" % self.training_data_cpu_time)
             dts.save_sampled_trajectories(config_data['reaction_network_config']['output_folder'] + "/",
                                           self.training_data, sample_type="training")
+            dts.save_cpu_time(config_data['reaction_network_config']['output_folder'] + "/", self.training_data_cpu_time
+                              , training=True)
         else:
-            self.training_data = dts.load_save_sampled_trajectories(config_data['reaction_network_config']['output_folder']
-                                                                    + "/", sample_type="training")
+            self.training_data = dts.load_save_sampled_trajectories(
+                config_data['reaction_network_config']['output_folder']
+                + "/", sample_type="training")
+            self.training_data_cpu_time = dts.load_cpu_time(config_data['reaction_network_config']['output_folder']
+                                                            + "/", training=True)
         if config_data['net_config']['validation_samples_needed'] == "True":
             start_time = time.time()
             self.valid_data = self.network.generate_sampled_rtc_trajectories(
                 self.config_data['reaction_network_config']['final_time'],
                 self.config_data['reaction_network_config']['num_time_interval'],
                 self.config_data['net_config']['valid_size'])
+            self.validation_data_cpu_time = (time.time() - start_time)
             self.total_num_simulated_trajectories = self.config_data['net_config']['valid_size'] + \
                                                     self.config_data['net_config']['batch_size']
             print("Time needed to generate validation trajectories: %3u" % (time.time() - start_time))
-            dts.save_sampled_trajectories(config_data['reaction_network_config']['output_folder'] + "/", self.training_data,
+            dts.save_sampled_trajectories(config_data['reaction_network_config']['output_folder'] + "/",
+                                          self.training_data,
                                           sample_type="validation")
+            dts.save_cpu_time(config_data['reaction_network_config']['output_folder'] + "/",
+                              self.validation_data_cpu_time, training=False)
         else:
             self.valid_data = dts.load_save_sampled_trajectories(config_data['reaction_network_config']['output_folder']
                                                                  + "/", sample_type="validation")
+            self.validation_data_cpu_time = dts.load_cpu_time(config_data['reaction_network_config']['output_folder']
+                                                            + "/", training=False)
 
         # set initial values for functions
         times, states_trajectories, martingale_trajectories = self.training_data
@@ -71,12 +83,20 @@ class CMESolver(object):
             if step % logging_frequency == 0:
                 loss = self.loss_fn(self.valid_data, training=False).numpy()
                 y_init = self.y_init.numpy()
-                elapsed_time = time.time() - start_time
+                elapsed_time = time.time() - start_time + self.validation_data_cpu_time + self.training_data_cpu_time
                 training_history.append([step, loss, elapsed_time])
                 function_value_data.append(y_init)
                 print("step: %5u, loss: %.4e, elapsed time: %3u" % (
                     step, loss, elapsed_time))
                 print_array_nicely(y_init, "Estimated Value")
+            # if self.config_data['net_config']['allow_batch_reset'] == "True" and \
+            #         step % training_data_reset_frequency == 0:
+            #     self.training_data = self.network.generate_sampled_rtc_trajectories(
+            #         self.config_data['reaction_network_config']['final_time'],
+            #         self.config_data['reaction_network_config']['num_time_interval'],
+            #         num_batch_size)
+            #     print('New training data generated!')
+            #     self.total_num_simulated_trajectories += num_batch_size
         return np.array(training_history), np.array(function_value_data), self.total_num_simulated_trajectories
 
     def loss_fn(self, inputs, training):
@@ -180,7 +200,7 @@ class FeedForwardSubNet(tf.keras.Model):
         num_layers = config_data['net_config']['num_hidden_layers']
         self.dense_layers = [tf.keras.layers.Dense(num_hiddens,
                                                    use_bias=True,
-                                                   activation=None,
+                                                   activation=config_data['net_config']['activation_function'],
                                                    kernel_initializer='zeros',
                                                    bias_initializer='zeros')
                              for _ in range(num_layers)]
@@ -193,7 +213,6 @@ class FeedForwardSubNet(tf.keras.Model):
     def call(self, x, training):
         for i in range(len(self.dense_layers) - 1):
             x = self.dense_layers[i](x)
-            x = tf.nn.relu(x)
         x = self.dense_layers[-1](x)
         return x
 
