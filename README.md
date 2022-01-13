@@ -1,7 +1,9 @@
 # DeepCME
-A deep learning framework for solving the Chemical Master Equation
+A deep learning framework for computing solution statistics of the Chemical Master Equation
 
-This is the code accompanying the manuscript titled **DeepCME: A deep learning framework for solving the Chemical Master Equation** by *Ankit Gupta, Christoph Schwab* and *Mustafa Khammash*. It contains the following files:
+This is the code accompanying the manuscript titled **DeepCME: A deep learning framework for computing solution statistics of the chemical master equation** by *Ankit Gupta, Christoph Schwab* and *Mustafa Khammash* [PLoS Comput Biol 17(12): e1009623, 2021](https://doi.org/10.1371/journal.pcbi.1009623). 
+
+It contains the following files:
 
 
 1. **main.py**: This is the main python script which requires a configuration JSON file as input (see below). Based on this configuration file, a reaction network  example is selected (from ReactionNetworkExamples.py), a deep neural network is trained (if requested), simulation-based output and sensitivity values are estimated (if requested), and the desired plots are generated. 
